@@ -6,6 +6,11 @@
   import { todoList as todos } from "./stores";
   import { getUID } from "./utility";
 
+  todos.subscribe((val) => {
+    localStorage.setItem("content", JSON.stringify(val));
+    console.warn(`[!] store updated, ${val.length} written`);
+  });
+
   const [send, receive] = crossfade({
     duration: (d) => Math.sqrt(d * 200),
 
@@ -50,11 +55,15 @@
   }
 </script>
 
-<div class="board">
-  <input placeholder="what needs to be done?" on:keydown={handleKeydown} />
+<div class="board container">
+  <input
+    class="add-item-box"
+    placeholder="what needs to be done?"
+    on:keydown={handleKeydown}
+  />
 
   <div class="left">
-    <h2>todo</h2>
+    <h2 class="todo-heading">todo</h2>
     {#each $todos.filter((t) => !t.done) as todo (todo.id)}
       <label
         in:receive={{ key: todo.id }}
@@ -69,7 +78,7 @@
   </div>
 
   <div class="right">
-    <h2>done</h2>
+    <h2 class="done-heading">done</h2>
     {#each $todos.filter((t) => t.done) as todo (todo.id)}
       <label
         class="done"
@@ -90,13 +99,32 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1em;
-    max-width: 36em;
-    margin: 0 auto;
   }
 
   .board > input {
     font-size: 1.4em;
     grid-column: 1/3;
+  }
+  .left,
+  .right {
+    display: flex;
+    flex-direction: column;
+  }
+  .add-item-box {
+    padding: 0.125em;
+    margin-inline: 0.25em;
+  }
+  .todo-heading {
+    background-color: hsl(0, 0%, 20%);
+    color: hsl(59, 100%, 58%);
+    text-transform: uppercase;
+    padding: 0.125em;
+  }
+  .done-heading {
+    background-color: hsl(140, 40%, 50%);
+    color: hsl(140, 40%, 95%);
+    text-transform: uppercase;
+    padding: 0.125em;
   }
 
   h2 {
@@ -113,9 +141,12 @@
     margin: 0 0 0.5em 0;
     border-radius: 2px;
     user-select: none;
-    border: 1px solid hsl(240, 8%, 70%);
-    background-color: hsl(240, 8%, 93%);
-    color: #333;
+
+    font-size: 1.125rem;
+    border: 1px solid hsl(40, 50%, 70%);
+    background-color: hsl(40, 50%, 98%);
+
+    color: #000c2a;
   }
 
   input[type="checkbox"] {
@@ -126,8 +157,8 @@
   }
 
   .done {
-    border: 1px solid hsl(240, 8%, 90%);
-    background-color: hsl(240, 8%, 98%);
+    border: 1px solid hsl(140, 50%, 70%);
+    background-color: hsl(140, 50%, 93%);
   }
 
   button {
@@ -148,10 +179,5 @@
 
   label:hover button {
     opacity: 1;
-  }
-  .left,
-  .right {
-    display: flex;
-    flex-direction: column;
   }
 </style>

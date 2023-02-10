@@ -1,11 +1,8 @@
 import { writable } from 'svelte/store';
 import { getUID } from './utility';
+import type { Todo } from './todo-types';
 
-export const todoList = writable([
-    { id: getUID(), done: false, description: "write some docs" },
-    { id: getUID(), done: false, description: "start writing blog post" },
-    { id: getUID(), done: true, description: "buy some milk" },
-    { id: getUID(), done: false, description: "mow the lawn" },
-    { id: getUID(), done: false, description: "feed the turtle" },
-    { id: getUID(), done: false, description: "fix some bugs" },
-]);
+let storeContent: string = localStorage.getItem('content');
+let initialValue: Todo[] = storeContent ? JSON.parse(storeContent) : [];
+
+export const todoList = writable(initialValue);
