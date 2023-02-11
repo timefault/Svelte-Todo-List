@@ -112,7 +112,6 @@
   }
   .add-item-box {
     padding: 0.125em;
-    margin-inline: 0.25em;
   }
   .todo-heading {
     background-color: hsl(0, 0%, 20%);
