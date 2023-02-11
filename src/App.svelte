@@ -8,8 +8,8 @@
 
   let sortOption = "description";
   let itemKeys = [
-    ["description", "description"],
     ["created", "createdAt"],
+    ["description", "description"],
     ["modified", "modifiedAt"],
   ];
 
@@ -67,50 +67,52 @@
 </script>
 
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
-<div class="board container">
-  <input
-    class="add-item-box"
-    placeholder="what needs to be done?"
-    on:keydown={handleKeydown}
-  />
-  <div class="sort-options">
-    {#each itemKeys as [description, field] (field)}
-      <input type="radio" bind:group={sortOption} id={field} value={field} />
-      <label class="sort-buttons " for={field}>
-        {description}
-      </label>
-    {/each}
-  </div>
-  <div class="left">
-    <h2 class="todo-heading">todo</h2>
-    {#each sortData( $todos.filter((t) => !t.done), sortOption ) as todo (todo.id)}
-      <label
-        class="todo-item"
-        in:receive={{ key: todo.id }}
-        out:send={{ key: todo.id }}
-        animate:flip={{ duration: 600 }}
-      >
-        <input type="checkbox" on:change={() => mark(todo, true)} />
-        {todo.description}
-        <button on:click={() => remove(todo)}>remove</button>
-      </label>
-    {/each}
-  </div>
+<div class="container">
+  <div class="board">
+    <input
+      class="add-item-box"
+      placeholder="what needs to be done?"
+      on:keydown={handleKeydown}
+    />
+    <div class="sort-options">
+      {#each itemKeys as [description, field] (field)}
+        <input type="radio" bind:group={sortOption} id={field} value={field} />
+        <label class="sort-buttons " for={field}>
+          {description}
+        </label>
+      {/each}
+    </div>
+    <div class="left">
+      <h2 class="todo-heading">todo</h2>
+      {#each sortData( $todos.filter((t) => !t.done), sortOption ) as todo (todo.id)}
+        <label
+          class="todo-item"
+          in:receive={{ key: todo.id }}
+          out:send={{ key: todo.id }}
+          animate:flip={{ duration: 600 }}
+        >
+          <input type="checkbox" on:change={() => mark(todo, true)} />
+          {todo.description}
+          <button on:click={() => remove(todo)}>remove</button>
+        </label>
+      {/each}
+    </div>
 
-  <div class="right">
-    <h2 class="done-heading">done</h2>
-    {#each sortData( $todos.filter((t) => t.done), sortOption ) as todo (todo.id)}
-      <label
-        class="todo-item done"
-        in:receive={{ key: todo.id }}
-        out:send={{ key: todo.id }}
-        animate:flip={{ duration: 600 }}
-      >
-        <input type="checkbox" checked on:change={() => mark(todo, false)} />
-        {todo.description}
-        <button on:click={() => remove(todo)}>remove</button>
-      </label>
-    {/each}
+    <div class="right">
+      <h2 class="done-heading">done</h2>
+      {#each sortData( $todos.filter((t) => t.done), sortOption ) as todo (todo.id)}
+        <label
+          class="todo-item done"
+          in:receive={{ key: todo.id }}
+          out:send={{ key: todo.id }}
+          animate:flip={{ duration: 600 }}
+        >
+          <input type="checkbox" checked on:change={() => mark(todo, false)} />
+          {todo.description}
+          <button on:click={() => remove(todo)}>remove</button>
+        </label>
+      {/each}
+    </div>
   </div>
 </div>
 
@@ -120,6 +122,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1em;
+    margin-inline: 1em;
   }
 
   .board > input {
