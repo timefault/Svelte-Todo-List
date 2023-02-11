@@ -4,7 +4,9 @@
   import { flip } from "svelte/animate";
   import type { Todo } from "./todo-types";
   import { todoList as todos } from "./stores";
-  import { getUID } from "./utility";
+  import { getUID, sortData } from "./utility";
+
+  let sortLeft, sortRight;
 
   todos.subscribe((val) => {
     localStorage.setItem("content", JSON.stringify(val));
@@ -30,10 +32,13 @@
   });
 
   function add(input: HTMLInputElement): void {
+    const now = Date.now();
     const todo: Todo = {
       id: getUID(),
       done: false,
       description: input.value,
+      createdAt: now,
+      modifiedAt: now,
     };
 
     todos.update((val: Todo[]) => [todo, ...val]);
@@ -55,16 +60,18 @@
   }
 </script>
 
+<!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
 <div class="board container">
   <input
     class="add-item-box"
     placeholder="what needs to be done?"
     on:keydown={handleKeydown}
   />
-
+  <div class="sort-left" />
+  <div class="sort-right" />
   <div class="left">
     <h2 class="todo-heading">todo</h2>
-    {#each $todos.filter((t) => !t.done) as todo (todo.id)}
+    {#each sortData( $todos.filter((t) => !t.done), "description" ) as todo (todo.id)}
       <label
         in:receive={{ key: todo.id }}
         out:send={{ key: todo.id }}
@@ -94,6 +101,7 @@
   </div>
 </div>
 
+<!-- ////////////////////////////////////////////////////////////////////////////// -->
 <style>
   .board {
     display: grid;
