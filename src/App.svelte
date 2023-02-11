@@ -7,6 +7,9 @@
   import { getUID, sortData } from "./utility";
 
   let sortOption = "description";
+  let prevSortOption = "description"; // used to toggle asc and dsc
+  let sortAsc = true;
+
   let itemKeys = [
     ["created", "createdAt"],
     ["description", "description"],
@@ -64,6 +67,14 @@
   function handleKeydown(e: KeyboardEvent): void {
     if (e.key === "Enter") add(e.target as HTMLInputElement);
   }
+  function handleOrderSelection(e: any) {
+    console.log("+");
+    let value = e.target.value;
+    if (sortOption === value) {
+      sortAsc = !sortAsc;
+    } else sortAsc = true;
+    sortOption = value;
+  }
 </script>
 
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
@@ -76,7 +87,13 @@
     />
     <div class="sort-options">
       {#each itemKeys as [description, field] (field)}
-        <input type="radio" bind:group={sortOption} id={field} value={field} />
+        <input
+          type="radio"
+          bind:group={sortOption}
+          id={field}
+          value={field}
+          on:click={handleOrderSelection}
+        />
         <label class="sort-buttons " for={field}>
           {description}
         </label>
@@ -84,7 +101,7 @@
     </div>
     <div class="left">
       <h2 class="todo-heading">todo</h2>
-      {#each sortData( $todos.filter((t) => !t.done), sortOption ) as todo (todo.id)}
+      {#each sortData( $todos.filter((t) => !t.done), sortOption, sortAsc ) as todo (todo.id)}
         <label
           class="todo-item"
           in:receive={{ key: todo.id }}
@@ -100,7 +117,7 @@
 
     <div class="right">
       <h2 class="done-heading">done</h2>
-      {#each sortData( $todos.filter((t) => t.done), sortOption ) as todo (todo.id)}
+      {#each sortData( $todos.filter((t) => t.done), sortOption, sortAsc ) as todo (todo.id)}
         <label
           class="todo-item done"
           in:receive={{ key: todo.id }}
@@ -194,7 +211,9 @@
     color: hsl(200, 50%, 40%);
     padding: 0.25em 0.5em;
     margin-inline-end: 0.5em;
+    font-weight: 500;
     font-size: 0.9rem;
+    user-select: none;
   }
   input[type="radio"]:checked + label {
     border: 1px solid hsl(200, 50%, 98%);
