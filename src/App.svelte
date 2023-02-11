@@ -6,7 +6,12 @@
   import { todoList as todos } from "./stores";
   import { getUID, sortData } from "./utility";
 
-  let sortLeft, sortRight;
+  let sortOption = "description";
+  let itemKeys = [
+    ["description", "description"],
+    ["created", "createdAt"],
+    ["modified", "modifiedAt"],
+  ];
 
   todos.subscribe((val) => {
     localStorage.setItem("content", JSON.stringify(val));
@@ -51,6 +56,7 @@
 
   function mark(todo: Todo, done: boolean): void {
     todo.done = done;
+    todo.modifiedAt = Date.now();
     remove(todo);
     $todos = $todos.concat(todo);
   }
@@ -67,15 +73,22 @@
     placeholder="what needs to be done?"
     on:keydown={handleKeydown}
   />
-  <div class="sort-left" />
-  <div class="sort-right" />
+  <div class="sort-options">
+    {#each itemKeys as [description, field] (field)}
+      <input type="radio" bind:group={sortOption} id={field} value={field} />
+      <label class="sort-buttons " for={field}>
+        {description}
+      </label>
+    {/each}
+  </div>
   <div class="left">
     <h2 class="todo-heading">todo</h2>
-    {#each sortData( $todos.filter((t) => !t.done), "description" ) as todo (todo.id)}
+    {#each sortData( $todos.filter((t) => !t.done), sortOption ) as todo (todo.id)}
       <label
+        class="todo-item"
         in:receive={{ key: todo.id }}
         out:send={{ key: todo.id }}
-        animate:flip
+        animate:flip={{ duration: 600 }}
       >
         <input type="checkbox" on:change={() => mark(todo, true)} />
         {todo.description}
@@ -86,12 +99,12 @@
 
   <div class="right">
     <h2 class="done-heading">done</h2>
-    {#each $todos.filter((t) => t.done) as todo (todo.id)}
+    {#each sortData( $todos.filter((t) => t.done), sortOption ) as todo (todo.id)}
       <label
-        class="done"
+        class="todo-item done"
         in:receive={{ key: todo.id }}
         out:send={{ key: todo.id }}
-        animate:flip
+        animate:flip={{ duration: 600 }}
       >
         <input type="checkbox" checked on:change={() => mark(todo, false)} />
         {todo.description}
@@ -112,6 +125,12 @@
   .board > input {
     font-size: 1.4em;
     grid-column: 1/3;
+  }
+  .board > .sort-options {
+    grid-column: 1/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .left,
   .right {
@@ -141,7 +160,7 @@
     margin: 0 0 0.5em 0;
   }
 
-  label {
+  label.todo-item {
     position: relative;
     line-height: 1.2;
     padding: 0.5em 2.5em 0.5em 2em;
@@ -162,8 +181,25 @@
     top: 0.6em;
     margin: 0;
   }
+  input[type="radio"] {
+    display: none;
+  }
+  .sort-buttons {
+    border-radius: 16px;
+    border: 1px solid hsl(200, 50%, 70%);
+    background-color: hsl(200, 50%, 98%);
+    color: hsl(200, 50%, 40%);
+    padding: 0.25em 0.5em;
+    margin-inline-end: 0.5em;
+    font-size: 0.9rem;
+  }
+  input[type="radio"]:checked + label {
+    border: 1px solid hsl(200, 50%, 98%);
+    background-color: hsl(200, 50%, 80%);
+    color: hsl(200, 100%, 30%);
+  }
 
-  .done {
+  label.done {
     border: 1px solid hsl(140, 50%, 70%);
     background-color: hsl(140, 50%, 93%);
   }
