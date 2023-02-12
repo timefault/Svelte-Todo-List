@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { quintOut } from "svelte/easing";
-  import { crossfade } from "svelte/transition";
-  import { flip } from "svelte/animate";
   import type { Todo } from "./todo-types";
   import { todoList as todos } from "./stores";
   import { getUID, sortData } from "./utility";
   import AddItemBar from "./components/AddItemBar.svelte";
   import SortOptions from "./components/SortOptions.svelte";
   import ItemList from "./components/ItemList.svelte";
+
+  import { crossfade } from "svelte/transition";
+  import { flip } from "svelte/animate";
+  import { quintOut } from "svelte/easing";
 
   let sortOption: string = "description";
   let sortAsc: boolean = true;
@@ -41,6 +42,11 @@
     },
   });
 
+  /**
+   * Add item to todo list
+   *
+   * @param input
+   */
   function add(input: HTMLInputElement): void {
     const now = Date.now();
     const todo: Todo = {
@@ -74,10 +80,24 @@
     <AddItemBar on:keydown={handleKeydown} />
     <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
     <div class="left">
-      <ItemList listHeading="todo" {sortOption} {sortAsc} completed={false} />
+      <ItemList
+        listHeading="todo"
+        {sortOption}
+        {sortAsc}
+        {send}
+        {receive}
+        completed={false}
+      />
     </div>
     <div class="right">
-      <ItemList listHeading="done" {sortOption} {sortAsc} completed={true} />
+      <ItemList
+        listHeading="done"
+        {sortOption}
+        {sortAsc}
+        {send}
+        {receive}
+        completed={true}
+      />
     </div>
   </div>
 </div>
@@ -122,19 +142,19 @@
     padding: 0.125em;
   }
 
-  :global(label.todo-item) {
+  :global(label.item) {
     position: relative;
     line-height: 1.2;
     padding: 0.5em 2.5em 0.5em 2em;
     margin: 0 0 0.5em 0;
     border-radius: 2px;
     user-select: none;
-
+    color: #000c2a;
     font-size: 1.125rem;
+  }
+  :global(label.todo-item) {
     border: 1px solid hsl(40, 50%, 70%);
     background-color: hsl(40, 50%, 98%);
-
-    color: #000c2a;
   }
 
   :global(input[type="checkbox"]) {
@@ -163,7 +183,7 @@
     color: hsl(200, 100%, 30%);
   }
 
-  label.done {
+  :global(label.done-item) {
     border: 1px solid hsl(140, 50%, 70%);
     background-color: hsl(140, 50%, 93%);
   }
