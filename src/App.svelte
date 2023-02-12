@@ -5,6 +5,8 @@
   import type { Todo } from "./todo-types";
   import { todoList as todos } from "./stores";
   import { getUID, sortData } from "./utility";
+  import AddItemBar from "./components/AddItemBar.svelte";
+  import SortOptions from "./components/SortOptions.svelte";
 
   let sortOption = "description";
   let sortAsc = true;
@@ -79,25 +81,8 @@
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
 <div class="container">
   <div class="board">
-    <input
-      class="add-item-box"
-      placeholder="what needs to be done?"
-      on:keydown={handleKeydown}
-    />
-    <div class="sort-options">
-      {#each itemKeys as [description, field] (field)}
-        <input
-          type="radio"
-          bind:group={sortOption}
-          id={field}
-          value={field}
-          on:click={handleOrderSelection}
-        />
-        <label class="sort-buttons " for={field}>
-          {description}
-        </label>
-      {/each}
-    </div>
+    <AddItemBar on:keydown={handleKeydown} />
+    <SortOptions {itemKeys} {sortOption} />
     <div class="left">
       <h2 class="todo-heading">todo</h2>
       {#each sortData( $todos.filter((t) => !t.done), sortOption, sortAsc ) as todo (todo.id)}
@@ -141,11 +126,11 @@
     margin-inline: 1em;
   }
 
-  .board > input {
+  .board > :global(input) {
     font-size: 1.4em;
     grid-column: 1/3;
   }
-  .board > .sort-options {
+  .board > :global(.sort-options) {
     grid-column: 1/3;
     display: flex;
     justify-content: center;
@@ -156,7 +141,7 @@
     display: flex;
     flex-direction: column;
   }
-  .add-item-box {
+  :global(.add-item-bar) {
     padding: 0.125em;
   }
   .todo-heading {
@@ -200,10 +185,10 @@
     top: 0.6em;
     margin: 0;
   }
-  input[type="radio"] {
+  :global(input[type="radio"]) {
     display: none;
   }
-  .sort-buttons {
+  :global(.sort-buttons) {
     border-radius: 16px;
     border: 1px solid hsl(200, 50%, 70%);
     background-color: hsl(200, 50%, 98%);
@@ -214,7 +199,7 @@
     font-size: 0.9rem;
     user-select: none;
   }
-  input[type="radio"]:checked + label {
+  :global(input[type="radio"]:checked + label) {
     border: 1px solid hsl(200, 50%, 98%);
     background-color: hsl(200, 50%, 80%);
     color: hsl(200, 100%, 30%);
