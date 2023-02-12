@@ -25,7 +25,7 @@ export function sortData(dataSet, col, asc = true) {
                 throw new Error('no comparator found for given data')
         }
     }
-    catch (e) { console.log(e); }
+    catch (e) { console.warn(e); }
 
     let res;
     res = dataSet.sort(comparator);

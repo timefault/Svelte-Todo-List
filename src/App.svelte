@@ -7,7 +7,6 @@
   import { getUID, sortData } from "./utility";
 
   let sortOption = "description";
-  let prevSortOption = "description"; // used to toggle asc and dsc
   let sortAsc = true;
 
   let itemKeys = [
