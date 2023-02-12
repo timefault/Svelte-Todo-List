@@ -1,6 +1,6 @@
-<script>
-    export let itemKeys;
-    export let sortOption;
+<script lang="ts">
+    export let itemKeys: string[][];
+    export let sortOption: string;
 </script>
 
 <!-- //////////////////////////////////////// T E M P L A T E ////////////////////////////////////////  -->
