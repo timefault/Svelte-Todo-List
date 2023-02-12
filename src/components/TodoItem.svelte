@@ -20,7 +20,11 @@
 </script>
 
 <!-- /////////////////////////// T E M P L A T E ////////////////////////// -->
-<label class="{type}-item item" in:receive out:send>
+<label
+    class="{type}-item item"
+    in:receive={{ key: todo.id }}
+    out:send={{ key: todo.id }}
+>
     <input type="checkbox" on:change={() => mark(todo)} />
     {todo.description}
     <button on:click={() => remove(todo)}>remove</button>
