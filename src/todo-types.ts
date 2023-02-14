@@ -6,3 +6,9 @@ export interface Task {
     modifiedAt: number;
     duration?: number;
 }
+export interface TaskPoole {
+    id: number;
+    description: string;
+    tasks: Task[];
+    duration?: number;
+}
