@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { flip } from "svelte/animate";
     import { sortData } from "../utility";
     import { todoList as todos } from "../stores";
     import TodoItem from "./TodoItem.svelte";

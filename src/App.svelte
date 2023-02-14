@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Todo } from "./todo-types";
+  import type { Task } from "./todo-types";
   import { todoList as todos } from "./stores";
   import { getUID, sortData } from "./utility";
   import AddItemBar from "./components/AddItemBar.svelte";
@@ -7,8 +7,8 @@
   import ItemList from "./components/ItemList.svelte";
 
   import { crossfade } from "svelte/transition";
-  import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
+  import AddList from "./components/AddList.svelte";
 
   let sortOption: string = "description";
   let sortAsc: boolean = true;
@@ -49,7 +49,7 @@
    */
   function add(input: HTMLInputElement): void {
     const now = Date.now();
-    const todo: Todo = {
+    const todo: Task = {
       id: getUID(),
       done: false,
       description: input.value,
@@ -57,7 +57,7 @@
       modifiedAt: now,
     };
 
-    todos.update((val: Todo[]) => [todo, ...val]);
+    todos.update((val: Task[]) => [todo, ...val]);
     input.value = "";
   }
 
@@ -75,32 +75,36 @@
 </script>
 
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
-<div class="container">
-  <div class="board">
-    <AddItemBar on:keydown={handleKeydown} />
-    <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
-    <div class="left">
-      <ItemList
-        listHeading="todo"
-        {sortOption}
-        {sortAsc}
-        {send}
-        {receive}
-        completed={false}
-      />
-    </div>
-    <div class="right">
-      <ItemList
-        listHeading="done"
-        {sortOption}
-        {sortAsc}
-        {send}
-        {receive}
-        completed={true}
-      />
+{#if true}
+  <div class="container">
+    <div class="board">
+      <AddItemBar on:keydown={handleKeydown} />
+      <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
+      <div class="left">
+        <ItemList
+          listHeading="todo"
+          {sortOption}
+          {sortAsc}
+          {send}
+          {receive}
+          completed={false}
+        />
+      </div>
+      <div class="right">
+        <ItemList
+          listHeading="done"
+          {sortOption}
+          {sortAsc}
+          {send}
+          {receive}
+          completed={true}
+        />
+      </div>
     </div>
   </div>
-</div>
+{:else}
+  <AddList />
+{/if}
 
 <!-- ////////////////////////////////////////////////////////////////////////////// -->
 <style>
