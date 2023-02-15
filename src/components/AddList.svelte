@@ -1,11 +1,9 @@
 <script lang="ts">
-    // present duration as list of buttons, some fast convenient input method
-    let taskPoole;
-    let taskDescription;
-    let taskDuration;
-    let tasks = [];
+    import TaskPoolComponent from "./TaskPoolComponent.svelte";
 
-    let status = "beginning";
+    let taskPool;
+
+    let status = "not started";
 
     type Task = {
         description: string;
@@ -16,27 +14,28 @@
         duration: number;
         tasks: Task[];
     };
-    const pool = {
+    const pool: TaskPool = {
         description: "",
         duration: 0,
         tasks: [],
     };
 
     function parseDuration(input: string): number {
-        return 1;
+        return 1000 * 20;
+    }
+    function handleClick(e: Event) {
+        status = "beginning";
+        setTimeout(() => taskPool.focus(), 0);
     }
     function handleKeydown(e: Event): void {
         let keyEvent = e as KeyboardEvent;
         switch (keyEvent.key) {
             case "Enter":
-                if (status === "beginning") {
-                    setPool(e.target);
-                } else {
-                    let textbox = e.target as HTMLInputElement;
-                    if (textbox.classList.contains("task-description")) {
-                        taskDuration.focus();
-                    } // taskDuration is selected
-                    else addTaskToPool();
+                if (status === "not started") {
+                    status = "beginning";
+                } else if (status === "beginning") {
+                    createPool(e.target);
+                    status = "not started";
                 }
                 break;
             case "Escape":
@@ -46,51 +45,35 @@
             default:
         }
     }
-    function setPool(input) {
-        status = "next";
-        pool.description = new Date().toDateString();
+    function createPool(input) {
+        // set pool and display todo list
         pool.duration = parseDuration(input.value);
-        input.value = "";
-        setTimeout(() => {
-            taskDescription.focus();
-        }, 0);
-    }
-    function addTaskToPool() {
-        console.log("[!]", taskDescription === "input.task-description");
-        pool.tasks.push({
-            description: taskDescription.value,
-            duration: taskDuration.value,
+        let props = {
+            id: 0,
+            description: "test",
+            tasks: [],
+            duration: pool.duration,
+        };
+        const newPool = new TaskPoolComponent({
+            target: document.body,
+            props: props,
         });
+        return newPool;
     }
     function stepBack() {
-        status = "beginning";
-        setTimeout(() => {
-            taskPoole.focus();
-        }, 0);
+        status = "not started";
     }
 </script>
 
 <!--//////////////////// T E M P L A T E /////////////////////  -->
 <div class="container">
-    {#if status === "beginning"}
+    {#if status === "not started"}
+        <button on:click={handleClick} on:keydown={handleKeydown}>+</button>
+    {:else if status === "beginning"}
         <input
             placeholder="how much time is available?"
             type="text"
-            bind:this={taskPoole}
-            on:keydown={handleKeydown}
-        />
-    {:else}
-        <input
-            type="text"
-            class="task-description"
-            placeholder="task description"
-            bind:this={taskDescription}
-            on:keydown={handleKeydown}
-        />
-        <input
-            type="text"
-            placeholder="task duration"
-            bind:this={taskDuration}
+            bind:this={taskPool}
             on:keydown={handleKeydown}
         />
     {/if}

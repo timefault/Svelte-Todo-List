@@ -9,6 +9,27 @@
     import { crossfade } from "svelte/transition";
     import { quintOut } from "svelte/easing";
 
+    // export let id: number;
+    // export let description: string = "Untitled";
+    export let description;
+    export let tasks: Task[] = [];
+    export let duration: number = -1;
+
+    let startTime = Date.now(),
+        finishTime = startTime + duration;
+    let timeNow = Date.now();
+    let interval = setInterval(() => (timeNow = Date.now()), 16);
+    $: if (timeNow >= finishTime) {
+        clearInterval(interval);
+        progressValue = 0;
+    }
+
+    $: progressValue = (finishTime - timeNow) / duration;
+    $: progressBarWidth = progressValue * 100;
+    $: progressBarBackgroundColor = `rgb(${255 * (1 - progressValue)}, ${
+        255 * progressValue
+    }, ${progressValue / 2})`;
+
     let sortOption: string = "description";
     let sortAsc: boolean = true;
 
@@ -41,11 +62,7 @@
         },
     });
 
-    /**
-     * Add item to todo list
-     *
-     * @param input
-     */
+    // add item to list
     function add(input: HTMLInputElement): void {
         const now = Date.now();
         const todo: Task = {
@@ -73,34 +90,42 @@
     }
 </script>
 
-<div class="container">
-    <div class="board">
-        <AddItemBar on:keydown={handleKeydown} />
-        <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
-        <div class="left">
-            <ItemList
-                listHeading="todo"
-                {sortOption}
-                {sortAsc}
-                {send}
-                {receive}
-                completed={false}
-            />
-        </div>
-        <div class="right">
-            <ItemList
-                listHeading="done"
-                {sortOption}
-                {sortAsc}
-                {send}
-                {receive}
-                completed={true}
-            />
-        </div>
+<div class="board">
+    <h1 class="full-width">{description}</h1>
+    <div class="progress-container full-width">
+        <div
+            class="progress-bar"
+            style:--progress-bar-width="{progressBarWidth}%"
+            style:--progress-bar-background-color={progressBarBackgroundColor}
+        />
+    </div>
+    <AddItemBar on:keydown={handleKeydown} />
+    <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
+    <div class="left">
+        <ItemList
+            listHeading="todo"
+            {sortOption}
+            {sortAsc}
+            {send}
+            {receive}
+            completed={false}
+        />
+    </div>
+    <div class="right">
+        <ItemList
+            listHeading="done"
+            {sortOption}
+            {sortAsc}
+            {send}
+            {receive}
+            completed={true}
+        />
     </div>
 </div>
 
 <style>
+    :root {
+    }
     .board {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -184,5 +209,18 @@
     :global(label.done-item) {
         border: 1px solid hsl(140, 50%, 70%);
         background-color: hsl(140, 50%, 93%);
+    }
+    .full-width {
+        grid-column: 1/3;
+    }
+    .progress-container {
+        background-color: transparent;
+        border-radius: 15px;
+    }
+    .progress-bar {
+        width: var(--progress-bar-width);
+        height: 1rem;
+        background-color: var(--progress-bar-background-color);
+        border-radius: 15px;
     }
 </style>

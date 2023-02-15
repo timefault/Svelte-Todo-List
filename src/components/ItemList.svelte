@@ -15,7 +15,7 @@
 <!-- //////////////////////////// T E M P L A T E ///////////////////////////// -->
 <h2 class="{listHeading}-heading">{listHeading}</h2>
 {#each sortData( $todos.filter((t) => t.done === completed), sortOption, sortAsc ) as todo (todo.id)}
-    <div animate:flip>
+    <div animate:flip={{ duration: 500 }}>
         <TodoItem {todo} type={listHeading} {send} {receive} />
     </div>
 {/each}
