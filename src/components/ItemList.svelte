@@ -2,6 +2,7 @@
     import { sortData } from "../utility";
     import { todoList as todos } from "../stores";
     import TodoItem from "./TodoItem.svelte";
+    import { flip } from "svelte/animate";
 
     export let listHeading: string;
     export let sortOption: string;
@@ -12,10 +13,16 @@
 </script>
 
 <!-- //////////////////////////// T E M P L A T E ///////////////////////////// -->
-<h2 class="{listHeading}-heading">{listHeading}</h2>
-{#each sortData( $todos.filter((t) => t.done === completed), sortOption, sortAsc ) as todo (todo.id)}
-    <TodoItem {todo} type={listHeading} {send} {receive} />
-{/each}
+<div class="list-container">
+    <h2 class="{listHeading}-heading list-heading">{listHeading}</h2>
+    <div class="flex flex-column">
+        {#each sortData( $todos.filter((t) => t.done === completed), sortOption, sortAsc ) as todo (todo.id)}
+            <div animate:flip={{ duration: 500 }}>
+                <TodoItem {todo} type={listHeading} {send} {receive} />
+            </div>
+        {/each}
+    </div>
+</div>
 
 <!-- ////////////////////////////////////////////////////////////////-->
 <style>
@@ -24,5 +31,8 @@
         font-weight: 200;
         user-select: none;
         margin: 0 0 0.5em 0;
+    }
+    .list-container {
+        width: 100%;
     }
 </style>

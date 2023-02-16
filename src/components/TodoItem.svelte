@@ -1,20 +1,20 @@
 <script lang="ts">
-    import type { Todo } from "../todo-types";
+    import type { Task } from "../todo-types";
     import { todoList as todos } from "../stores";
 
-    export let todo: Todo;
+    export let todo: Task;
     export let type: string; // should be enum
     export let send;
     export let receive;
 
-    function mark(todo: Todo): void {
+    function mark(todo: Task): void {
         todo.done = !todo.done;
         todo.modifiedAt = Date.now();
         remove(todo);
         $todos = $todos.concat(todo);
     }
 
-    function remove(todo: Todo): void {
+    function remove(todo: Task): void {
         $todos = $todos.filter((t) => t !== todo);
     }
 </script>

@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { Todo } from "./todo-types";
+  /**
+   * - Instead of pools, all items are tasks that can have sub-tasks
+   */
+  import type { Task } from "./todo-types";
   import { todoList as todos } from "./stores";
   import { getUID, sortData } from "./utility";
   import AddItemBar from "./components/AddItemBar.svelte";
@@ -7,7 +10,6 @@
   import ItemList from "./components/ItemList.svelte";
 
   import { crossfade } from "svelte/transition";
-  import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
 
   let sortOption: string = "description";
@@ -42,28 +44,49 @@
     },
   });
 
-  /**
-   * Add item to todo list
-   *
-   * @param input
-   */
+  function parseDuration(input: string | number): number {
+    return 20;
+  }
   function add(input: HTMLInputElement): void {
+    // determine which textbox the event originates
+    let taskDescription, taskDuration;
+    if (input.classList.contains("add-item-bar")) {
+      taskDescription = input;
+      taskDuration = input.nextElementSibling;
+    } else {
+      taskDescription = input.previousElementSibling;
+      taskDuration = input;
+    }
+
+    if (taskDescription.value === "") return;
+    let duration = parseDuration(input.value);
+
+    console.log(taskDescription, taskDuration);
     const now = Date.now();
-    const todo: Todo = {
+    const todo: Task = {
       id: getUID(),
       done: false,
-      description: input.value,
+      description: taskDescription.value,
       createdAt: now,
       modifiedAt: now,
+      duration: duration,
     };
 
-    todos.update((val: Todo[]) => [todo, ...val]);
-    input.value = "";
+    todos.update((val: Task[]) => [todo, ...val]);
+    taskDescription.value = "";
+    taskDescription.focus();
+    taskDuration.value = "";
   }
 
-  function handleKeydown(e: KeyboardEvent): void {
-    if (e.key === "Enter") add(e.target as HTMLInputElement);
+  function handleKeydown(e: Event): void {
+    let key = (e as KeyboardEvent).key;
+    switch (key) {
+      case "Enter":
+        add(e.target as HTMLInputElement);
+        break;
+    }
   }
+
   function handleOrderSelection(e: any) {
     console.log("+");
     let value = e.target.value;
@@ -79,7 +102,7 @@
   <div class="board">
     <AddItemBar on:keydown={handleKeydown} />
     <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
-    <div class="left">
+    <div class="lists ">
       <ItemList
         listHeading="todo"
         {sortOption}
@@ -88,8 +111,6 @@
         {receive}
         completed={false}
       />
-    </div>
-    <div class="right">
       <ItemList
         listHeading="done"
         {sortOption}
@@ -105,44 +126,38 @@
 <!-- ////////////////////////////////////////////////////////////////////////////// -->
 <style>
   .board {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 1em;
-    margin-inline: 1em;
-  }
-
-  .board > :global(input) {
-    font-size: 1.4em;
-    grid-column: 1/3;
-  }
-  .board > :global(.sort-options) {
-    grid-column: 1/3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .left,
-  .right {
     display: flex;
     flex-direction: column;
   }
-  :global(.add-item-bar) {
+
+  :global(.sort-options) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block: 1em;
+  }
+  .lists {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    margin-block: 1em;
+  }
+  :global(.list-heading) {
+    flex-grow: 1;
+    text-transform: uppercase;
     padding: 0.125em;
   }
   :global(.todo-heading) {
     background-color: hsl(0, 0%, 20%);
     color: hsl(59, 100%, 58%);
-    text-transform: uppercase;
-    padding: 0.125em;
   }
   :global(.done-heading) {
     background-color: hsl(140, 40%, 50%);
     color: hsl(140, 40%, 95%);
-    text-transform: uppercase;
-    padding: 0.125em;
   }
 
   :global(label.item) {
+    display: block;
     position: relative;
     line-height: 1.2;
     padding: 0.5em 2.5em 0.5em 2em;

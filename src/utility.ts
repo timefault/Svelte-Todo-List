@@ -4,8 +4,9 @@ export function getUID(): number {
 
 export function sortData(dataSet, col, asc = true) {
 
+    if (dataSet.length === 0) return [];
     let type = dataSet[0] && typeof dataSet[0][col];
-    if (type === 'undefined') return;
+    if (type === 'undefined') return [];
     let comparator;
     try {
         switch (type) {
