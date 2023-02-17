@@ -111,21 +111,29 @@
     let target = e.detail.target;
     openTasks.push(target);
     console.log(target);
-    if (e.detail.target) target.style = "height: calc(80vh)";
+    // if (e.detail.target) target.style = "height: calc(80vh)";
   }
 
-  let tasks = [];
+  let tasks = [
+    { id: 1, description: "top", subTasks: [{ id: 101, description: "sub1" }] },
+  ];
   let openTasks = [];
 </script>
 
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
-<svelte:window on:keydown={handleKeydown} />
+<!-- <svelte:window on:keydown={handleKeydown} /> -->
 <div class="container">
   <div class="board ">
     <AddItemBar on:keydown={handleKeydown} />
     {#each tasks as task (task.id)}
-      <TaskComponent on:taskClicked={handleTaskClick}>
+      <TaskComponent>
         <span slot="description">{task.description}</span>
+        <svelte:fragment slot="sub-tasks">
+          <!-- prevent passing subTasks if undefined -->
+          {#each task.subTasks as subTask (subTask.id)}
+            <span>{subTask.description}</span>
+          {/each}
+        </svelte:fragment>
       </TaskComponent>
     {/each}
   </div>
@@ -133,10 +141,6 @@
 
 <!-- ////////////////////////////////////////////////////////////////////////////// -->
 <style>
-  :global(.full-height) {
-    height: calc(100vh -100px);
-    background-color: red;
-  }
   .board {
     display: flex;
     flex-direction: column;

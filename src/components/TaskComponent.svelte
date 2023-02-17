@@ -1,9 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    let open = false;
 
     const dispatcher = createEventDispatcher();
     function handleClick(e: Event) {
-        dispatcher("taskClicked", { target: e.target });
+        open = !open;
     }
 </script>
 
@@ -11,6 +12,13 @@
 
 <div on:click={handleClick} class="card">
     <slot name="description" />
+    {#if open}
+        {#if $$slots["sub-tasks"]}
+            <div class:sub-task={open}>
+                <slot name="sub-tasks" />
+            </div>
+        {/if}
+    {/if}
 </div>
 
 <!--/////////////////////////////////////////////////////////  -->
@@ -20,5 +28,13 @@
         color: #222c2a;
         background-color: hsl(118, 25%, 70%);
         margin-block-end: 0.25em;
+    }
+    .open {
+        /* height: 80vh; */
+    }
+    .sub-task {
+        background-color: lightblue;
+        padding: 1em;
+        margin-top: 0.125em;
     }
 </style>
