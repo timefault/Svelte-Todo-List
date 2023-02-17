@@ -3,7 +3,7 @@ export interface Task {
     done: boolean;
     description: string;
     createdAt: number;
-    modifiedAt: number;
+    modifiedAt?: number;
     duration?: number;
     subtasks?: Task[];
 }

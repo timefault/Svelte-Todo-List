@@ -11,6 +11,7 @@
 
   import { crossfade } from "svelte/transition";
   import { quintOut } from "svelte/easing";
+  import TaskComponent from "./components/TaskComponent.svelte";
 
   let sortOption: string = "description";
   let sortAsc: boolean = true;
@@ -72,10 +73,12 @@
       duration: duration,
     };
 
-    todos.update((val: Task[]) => [todo, ...val]);
+    // todos.update((val: Task[]) => [todo, ...val]);
+    tasks = [todo, ...tasks];
     taskDescription.value = "";
     taskDescription.focus();
     taskDuration.value = "";
+    console.log("+");
   }
 
   function handleKeydown(e: Event): void {
@@ -83,6 +86,11 @@
     switch (key) {
       case "Enter":
         add(e.target as HTMLInputElement);
+        break;
+      case "Escape":
+        // remove full-height
+        console.log("Escapeeee!");
+        openTasks.forEach((task) => (task.style = "height=auto"));
         break;
     }
   }
@@ -95,36 +103,40 @@
     } else sortAsc = true;
     sortOption = value;
   }
+  function handleHover(e: Event) {
+    let target = e.target as HTMLElement;
+  }
+  function handleTaskClick(e: CustomEvent) {
+    console.log("[+]");
+    let target = e.detail.target;
+    openTasks.push(target);
+    console.log(target);
+    if (e.detail.target) target.style = "height: calc(80vh)";
+  }
+
+  let tasks = [];
+  let openTasks = [];
 </script>
 
 <!-- //////////////// T E M P L A T E //////////////////////////////////////////// -->
+<svelte:window on:keydown={handleKeydown} />
 <div class="container">
-  <div class="board">
+  <div class="board ">
     <AddItemBar on:keydown={handleKeydown} />
-    <SortOptions {itemKeys} {sortOption} on:click={handleOrderSelection} />
-    <div class="lists ">
-      <ItemList
-        listHeading="todo"
-        {sortOption}
-        {sortAsc}
-        {send}
-        {receive}
-        completed={false}
-      />
-      <ItemList
-        listHeading="done"
-        {sortOption}
-        {sortAsc}
-        {send}
-        {receive}
-        completed={true}
-      />
-    </div>
+    {#each tasks as task (task.id)}
+      <TaskComponent on:taskClicked={handleTaskClick}>
+        <span slot="description">{task.description}</span>
+      </TaskComponent>
+    {/each}
   </div>
 </div>
 
 <!-- ////////////////////////////////////////////////////////////////////////////// -->
 <style>
+  :global(.full-height) {
+    height: calc(100vh -100px);
+    background-color: red;
+  }
   .board {
     display: flex;
     flex-direction: column;

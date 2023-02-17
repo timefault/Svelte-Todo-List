@@ -12,7 +12,7 @@
         --roundness: 20px;
     }
     .action-container {
-        margin: 0 auto;
+        margin: 0 auto 2em;
         max-width: 40%;
     }
     .action-bar {
